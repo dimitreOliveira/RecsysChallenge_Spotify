@@ -4,3 +4,4 @@ submissions
 data
 *.h5
 R/.Rhistory
+.Rproj.user
