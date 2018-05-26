@@ -1,69 +1,64 @@
-import os
 import pandas as pd
-import numpy as np
-from keras import Input, Model
-from keras.layers import Embedding, merge, Flatten, Dropout, Dense
-from keras.optimizers import Adam
-from keras.regularizers import l2
-
-path = 'data/ml-latest-small/'
-model_path = path + 'models/'
-if not os.path.exists(model_path):
-    os.mkdir(model_path)
-
-ratings = pd.read_csv(path+'ratings.csv')
-movie_names = pd.read_csv(path+'movies.csv').set_index('movieId')['title'].to_dict()
-
-batch_size = 64
-users = ratings.userId.unique()
-movies = ratings.movieId.unique()
-n_users = len(users)
-n_movies = len(movies)
-
-userid2idx = {o: i for i, o in enumerate(users)}
-movieid2idx = {o: i for i, o in enumerate(movies)}
-
-ratings.movieId = ratings.movieId.apply(lambda x: movieid2idx[x])
-ratings.userId = ratings.userId.apply(lambda x: userid2idx[x])
-
-user_min = ratings.userId.min()
-user_max = ratings.userId.max()
-movie_min = ratings.movieId.min()
-movie_max = ratings.movieId.max()
-
-msk = np.random.rand(len(ratings)) < 0.8
-trn = ratings[msk]
-val = ratings[~msk]
-
-g = ratings.groupby('userId')['rating'].count()
-topUsers = g.sort_values(ascending=False)[:15]
+from sklearn.model_selection import train_test_split
+from model import ItemSimilarityRecommender
 
 
-def embedding_input(name, n_in, n_out, reg):
-    inp = Input(shape=(1,), dtype='int64', name=name)
+pd.set_option('display.width', 320)
 
-    return inp, Embedding(n_in, n_out, input_length=1, embeddings_regularizer=l2(reg))(inp)
+triplets_file = 'data/triplets_file.csv'
+songs_metadata_file = 'data/song_data.csv'
 
+song_df_1 = pd.read_csv(triplets_file)
+song_df_2 = pd.read_csv(songs_metadata_file)
 
-n_factors = 50
+# Merge the two dataframes above to create input dataframe for recommender systems
+song_df = pd.merge(song_df_1, song_df_2.drop_duplicates(['song_id']), on="song_id", how="left")
 
-user_in, u = embedding_input('user_in', n_users, n_factors, 1e-4)
-movie_in, m = embedding_input('movie_in', n_movies, n_factors, 1e-4)
+print(len(song_df))
 
-x = merge([u, m], mode='concat')
-x = Flatten()(x)
-x = Dropout(0.3)(x)
-x = Dense(70, activation='relu')(x)
-x = Dropout(0.75)(x)
-x = Dense(1)(x)
-nn = Model([user_in, movie_in], x)
-nn.compile(Adam(0.001), loss='mse')
+# Merge song title and artist_name columns to make a merged column
+song_df['song'] = song_df['title'].map(str) + " - " + song_df['artist_name']
 
-print(nn.summary())
+song_grouped = song_df.groupby(['song']).agg({'listen_count': 'count'}).reset_index()
+grouped_sum = song_grouped['listen_count'].sum()
+song_grouped['percentage'] = song_grouped['listen_count'].div(grouped_sum)*100
+print(song_grouped.sort_values(['listen_count', 'song'], ascending=[0, 1]))
 
-nn.fit([trn.userId, trn.movieId], trn.rating, batch_size=batch_size, epochs=1,
-       validation_data=([val.userId, val.movieId], val.rating))
+users = song_df['user_id'].unique()
+songs = song_df['song'].unique()
 
-pre = nn.predict([trn.userId, trn.movieId])
+print("----------------------------------------------------------------------")
+print("Unique user count: %s:" % len(users))
+print("----------------------------------------------------------------------")
+print("Unique Song count: %s:" % len(songs))
+print("----------------------------------------------------------------------")
 
-print(pre)
+train_data, test_data = train_test_split(song_df, test_size=0.20, random_state=0)
+print(train_data.head(5))
+
+is_model = ItemSimilarityRecommender()
+is_model.create(train_data, 'user_id', 'song')
+
+# Use the personalized model to make some song recommendations
+
+# Print the songs for the user in training data
+user_id = users[5]
+user_items = is_model.get_user_items(user_id)
+
+print("----------------------------------------------------------------------")
+print("Training data songs for the user userid: %s:" % user_id)
+print("----------------------------------------------------------------------")
+
+for user_item in user_items:
+    print(user_item)
+
+print("----------------------------------------------------------------------")
+print("Recommendation process going on:")
+print("----------------------------------------------------------------------")
+
+# Recommend songs for the user using personalized model
+print(is_model.recommend(user_id))
+
+# # We can also apply the model to find similar songs to any song in the dataset
+# song = 'Yellow - Coldplay'
+# print(is_model.get_similar_items([song]))

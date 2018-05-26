@@ -2,6 +2,7 @@
 __pycache__/
 submissions
 data
+challenge
 *.h5
 R/.Rhistory
 .Rproj.user
