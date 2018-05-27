@@ -1,5 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
+
+from dataset import build_output, output_submission
 from model import ItemSimilarityRecommender
 
 
@@ -17,6 +19,8 @@ song_df_2 = pd.read_csv(songs_metadata_file)
 # Merge the two dataframes above to create input dataframe for recommender systems
 song_df = pd.merge(song_df_1, song_df_2.drop_duplicates(['song_id']), on="song_id", how="left")
 
+# subsetting for test
+song_df = song_df[:10000]
 print(len(song_df))
 
 # Merge song title and artist_name columns to make a merged column
@@ -65,3 +69,20 @@ print(is_model.recommend(user_id))
 # # We can also apply the model to find similar songs to any song in the dataset
 # song = 'Yellow - Coldplay'
 # print(is_model.get_similar_items([song]))
+
+
+# Test recommendation for the challenge
+rec1 = is_model.recommend(users[1])
+rec2 = is_model.recommend(users[2])
+rec3 = is_model.recommend(users[3])
+rec4 = is_model.recommend(users[4])
+rec5 = is_model.recommend(users[5])
+
+list_rec = [rec1, rec2, rec3, rec4, rec5]
+
+output = build_output(list_rec, 'user_id', 'song')
+
+file_name = 'test.csv'
+team_name = 'RecSysCG'
+contact_information = 'email@gmail.com'
+output_submission(output, file_name, team_name, contact_information)
