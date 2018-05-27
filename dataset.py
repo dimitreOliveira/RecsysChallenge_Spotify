@@ -9,6 +9,14 @@ def build_columns():
     return columns
 
 
+def build_output(df_list, id_cloumn, song_column):
+    output = pd.DataFrame(columns=build_columns())
+    for df in df_list:
+        output = output.append(format_output(df, id_cloumn, song_column))
+
+    return output
+
+
 def format_output(df, id_cloumn, song_column):
     columns = build_columns()[1:501]
     output = df
