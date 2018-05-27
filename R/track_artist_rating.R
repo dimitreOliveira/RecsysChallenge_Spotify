@@ -23,8 +23,13 @@ colnames(artist_join_rating) <- names1
 
 track_join_rating <- artist_join_rating %>%
   left_join(df_track_id, by = "track_id")
+  
 
 names2 <- c("track_id", "artist_id", "artist_count", "artist_rating", "track_count", "track_rating")
 
 colnames(track_join_rating) <- names2
+
+track_join_rating <- track_join_rating %>% 
+  unique()
+
 write.table(track_join_rating, file = "../data/track_artist_rating.csv",row.names=FALSE, na="",col.names=TRUE, sep=";")
