@@ -14,6 +14,8 @@ song_df_2 = pd.read_csv(songs_metadata_file)
 # Merge the two dataframes above to create input dataframe for recommender systems
 song_df = pd.merge(song_df_1, song_df_2.drop_duplicates(['song_id']), on="song_id", how="left")
 
+
+song_df = song_df[:10000]
 print(len(song_df))
 
 # Merge song title and artist_name columns to make a merged column
