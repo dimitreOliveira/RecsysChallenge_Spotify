@@ -6,13 +6,17 @@ from model import ItemSimilarityRecommender
 
 pd.set_option('display.width', 320)
 
-playlist_data = 'data/sample_rating_track_play.csv'
+playlist_data = 'data/rating_track_play.csv'
+test_data = 'data/pid_10k_sample.csv'
 
-playlist_df = pd.read_csv(playlist_data, delimiter=';')
+test_df = pd.read_csv(test_data, delimiter=',')
 
+playlist_df = pd.read_csv(playlist_data, delimiter=';', dtype={'pid': int, 'track_uri': str, 'rating': int})
+
+playlist_df['track_uri'] = 'spotify:track:' + playlist_df['track_uri']
 print(len(playlist_df))
 
-users = playlist_df['pid'].unique()
+users = test_df['pid'].unique()
 songs = playlist_df['track_uri'].unique()
 
 print("----------------------------------------------------------------------")
@@ -21,7 +25,7 @@ print("----------------------------------------------------------------------")
 print("Unique Song count: %s:" % len(songs))
 print("----------------------------------------------------------------------")
 
-train_data, test_data = train_test_split(playlist_df, test_size=0.2, random_state=0)
+train_data = playlist_df
 print(train_data.head(5))
 
 is_model = ItemSimilarityRecommender()
@@ -48,17 +52,15 @@ print("----------------------------------------------------------------------")
 # print(is_model.recommend(user_id))
 
 # Test recommendation for the challenge
-rec1 = is_model.recommend(users[1])
-rec2 = is_model.recommend(users[2])
-rec3 = is_model.recommend(users[3])
-rec4 = is_model.recommend(users[4])
-rec5 = is_model.recommend(users[5])
 
-list_rec = [rec1, rec2, rec3, rec4, rec5]
+list_rec = []
+for i in users:
+	rec = is_model.recommend(i)
+	list_rec.append(rec)
 
 output = build_output(list_rec, 'user_id', 'song')
 
 file_name = 'test.csv'
 team_name = 'RecSysCG'
-contact_information = 'email@gmail.com'
+contact_information = 'dimitreandrew@gmail.com'
 output_submission(output, file_name, team_name, contact_information)
