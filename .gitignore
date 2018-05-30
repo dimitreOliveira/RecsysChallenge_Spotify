@@ -5,4 +5,5 @@ data
 challenge
 *.h5
 R/.Rhistory
+R/.RData
 .Rproj.user

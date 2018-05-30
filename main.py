@@ -6,7 +6,7 @@ from model import ItemSimilarityRecommender
 
 pd.set_option('display.width', 320)
 
-playlist_data = 'data/rating_track_play.csv'
+playlist_data = 'data/rating_track_play_added_songs.csv'
 test_data = 'data/pid_10k_sample.csv'
 
 test_df = pd.read_csv(test_data, delimiter=',')
