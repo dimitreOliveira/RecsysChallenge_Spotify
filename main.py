@@ -11,13 +11,13 @@ test_data = 'data/pid_10k_sample.csv'
 
 test_df = pd.read_csv(test_data, delimiter=',')
 
-playlist_df = pd.read_csv(playlist_data, delimiter=';', dtype={'pid': int, 'track_uri': str, 'rating': int})
+playlist_df = pd.read_csv(playlist_data, delimiter=';', dtype={'pid': int, 'track_id': int, 'rating': int})
 
-playlist_df['track_uri'] = 'spotify:track:' + playlist_df['track_uri']
+#playlist_df['track_uri'] = 'spotify:track:' + playlist_df['track_uri']
 print(len(playlist_df))
 
 users = test_df['pid'].unique()
-songs = playlist_df['track_uri'].unique()
+songs = playlist_df['track_id'].unique()
 
 print("----------------------------------------------------------------------")
 print("Unique user count: %s:" % len(users))
@@ -29,7 +29,7 @@ train_data = playlist_df
 print(train_data.head(5))
 
 is_model = ItemSimilarityRecommender()
-is_model.create(train_data, 'pid', 'track_uri')
+is_model.create(train_data, 'pid', 'track_id')
 
 # Use the personalized model to make some song recommendations
 
