@@ -140,3 +140,29 @@ class ItemSimilarityRecommender:
         df_recommendations = self.generate_top_recommendations(user, cooccurence_matrix, all_songs, user_songs)
 
         return df_recommendations
+
+
+def lightfm_recommendation(model, data, items, user_ids, verbose=0):
+    recommendation = []
+    n_users, n_itens = data.shape
+
+    for user_id in user_ids:
+        scores = model.predict(user_id, np.arange(n_itens), num_threads=2)
+        top_items = items[np.argsort(-scores)]
+        top_items_df = pd.DataFrame(top_items[:500])
+        top_items_df['pid'] = user_id
+        recommendation.append(top_items_df)
+
+        if verbose > 0:
+            print("User %s" % user_id)
+            if verbose == 2:
+                known_positives = items[data.tocsr()[user_id].indices]
+                print("Known positives:")
+                for x in known_positives[:3]:
+                    print("       %s" % x)
+
+                print("Recommended:")
+                for x in top_items[:3]:
+                    print("      %s" % x)
+
+    return recommendation

@@ -34,7 +34,7 @@ def output_submission(df, file_name, team_name, contact_information, path='submi
     first_row = pd.DataFrame(columns=['pid', 'trackuri_1', 'trackuri_2', 'trackuri_3'])
     first_row.loc[0] = ['team_info', challenge_track, team_name, contact_information]
 
-    output = pd.concat([first_row, df], sort=True)
+    output = pd.concat([first_row, df])
     output = output[build_columns()]
     output = output.set_index('pid')
     output.to_csv(file)
