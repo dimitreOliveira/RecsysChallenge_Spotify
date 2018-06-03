@@ -11,7 +11,7 @@ test_data = 'data/pid_10k_sample.csv'
 test_df = pd.read_csv(test_data, dtype=np.int32)
 playlist_df = pd.read_csv(playlist_data, delimiter=';', dtype={'pid': int, 'track_id': int, 'rating': int})
 
-playlist_df = playlist_df[:100000]
+# playlist_df = playlist_df[:100000]
 # playlist_df['track_uri'] = 'spotify:track:' + playlist_df['track_uri']
 
 users = test_df['pid'].unique()

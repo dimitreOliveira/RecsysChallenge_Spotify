@@ -13,7 +13,7 @@ test_data = 'data/pid_10k_sample.csv'
 test_df = pd.read_csv(test_data, dtype=np.int32)
 playlist_df = pd.read_csv(playlist_data, delimiter=';', dtype={'pid': int, 'track_id': int, 'rating': int})
 
-playlist_df = playlist_df[:50000]
+# playlist_df = playlist_df[:50000]
 
 users = playlist_df['pid'].unique()
 songs = playlist_df['track_id'].unique()
@@ -28,7 +28,6 @@ print("Unique Song count: %s:" % len(songs))
 print("----------------------------------------------------------------------")
 
 
-# playlist_data = playlist_df
 print("Sample of the data set")
 print(playlist_df.head(5))
 
@@ -39,8 +38,8 @@ lightfm_model = LightFM(loss='warp')
 
 lightfm_model.fit(train_data, epochs=30, num_threads=2)
 
-# rec = lightfm_recommendation(lightfm_model, train_data, playlist_df['track_id'], test_df.pid.values)
-rec = lightfm_recommendation(lightfm_model, train_data, playlist_df['track_id'], [1, 5, 150])
+rec = lightfm_recommendation(lightfm_model, train_data, playlist_df['track_id'], test_df.pid.values)
+# rec = lightfm_recommendation(lightfm_model, train_data, playlist_df['track_id'], [1, 5, 150])
 
 output = build_output(rec, 'pid', 'track_id')
 
