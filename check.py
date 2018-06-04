@@ -14,8 +14,9 @@ stats = {
 required_playlist_fields = ["num_holdouts", "pid", "num_tracks", "tracks", "num_samples"]
 optional_playlist_fields = ["name"] + required_playlist_fields
 
-track_fields = set(['pos', 'artist_name', 'artist_uri', 'track_uri', 'track_name',
-        'album_uri', 'album_name', 'duration_ms'])
+track_fields = set(['pos', 'artist_name', 'artist_uri', 'track_uri', 'track_name', 'album_uri', 'album_name',
+                    'duration_ms'])
+
 
 def check_challenge_set():
     f = open("challenge_set.json")
@@ -42,13 +43,13 @@ def check_challenge_set():
             tassert(field in optional_playlist_fields, "valid playlist field")
 
         for f in required_playlist_fields:
-            tassert (f in playlist.keys(), "missing required play list field " + f)
+            tassert(f in playlist.keys(), "missing required play list field " + f)
 
         for track in playlist['tracks']:
             for field, val in track.items():
                 tassert(field in track_fields, "valid track field")
             for f in track_fields:
-                tassert (f in track.keys(), "missing required track field " + f)
+                tassert(f in track.keys(), "missing required track field " + f)
 
             unique_tracks.add(track['track_uri'])
             unique_albums.add(track['album_uri'])
@@ -57,31 +58,30 @@ def check_challenge_set():
 
     tassert(len(known_ids) == 10000, "proper number of unqiue IDs")
 
-    print
-    print "stats:"
-    for k,v in stats.items():
-        print "%s: %d" % (k,v)
-    print
+    print()
+    print("stats:")
+    for k, v in stats.items():
+        print("%s: %d" % (k, v))
+    print()
 
-    print "total playlists:", len(challenge_set["playlists"])
-    print "total tracks:   ",  total_tracks
-    print "unique tracks:  ",  len(unique_tracks)
-    print "unique albums:  ",  len(unique_albums)
-    print "unique artists: ",  len(unique_artists)
-    print
+    print("total playlists:", len(challenge_set["playlists"]))
+    print("total tracks:   ",  total_tracks)
+    print("unique tracks:  ",  len(unique_tracks))
+    print("unique albums:  ",  len(unique_albums))
+    print("unique artists: ",  len(unique_artists))
+    print()
 
     if stats['errors'] == 0:
-        print "challenge_set.json is OK"
+        print("challenge_set.json is OK")
     else:
-        print "challenge_set.json has errors"
+        print("challenge_set.json has errors")
 
 
 def tassert(cond, text):
     stats['tests'] += 1
     if not cond:
         stats['errors'] += 1
-        print "error:" + text
-
+        print("error:" + text)
 
 
 if __name__ == '__main__':

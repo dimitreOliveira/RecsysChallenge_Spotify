@@ -10,6 +10,7 @@ import json
 
 NTRACKS = 500
 
+
 def verify_submission(challenge_path, submission_path):
     has_team_info = False
     error_count = 0
@@ -21,12 +22,12 @@ def verify_submission(challenge_path, submission_path):
         challenge = json.loads(js)
     except:
         error_count += 1
-        print "Can't read the challenge set"
+        print("Can't read the challenge set")
         return error_count
 
     pids = set([playlist['pid'] for playlist in challenge['playlists']])
     if len(challenge['playlists']) != 10000:
-        print "Bad challenge set"
+        print("Bad challenge set")
         error_count += 1
 
     # seed_tracks contains seed tracks for each challenge playlist
@@ -53,10 +54,10 @@ def verify_submission(challenge_path, submission_path):
                 has_team_info = True
                 tinfo = line.split(',')
                 if tinfo[1] != 'main' and tinfo[1] != 'creative':
-                    print "unknown challenge track", tinfo[1], "should be 'main' or 'creative' at line", line_no
+                    print("unknown challenge track", tinfo[1], "should be 'main' or 'creative' at line", line_no)
                     error_count += 1
             else:
-                print "missing team_info at line", line_no
+                print("missing team_info at line", line_no)
                 error_count += 1
 
         else:
@@ -65,32 +66,32 @@ def verify_submission(challenge_path, submission_path):
             try:
                 pid = int(fields[0])
             except ValueError:
-                print "bad pid (should be an integer)", fields[0], "at line", line_no
+                print("bad pid (should be an integer)", fields[0], "at line", line_no)
                 error_count += 1
                 continue
             tracks = fields[1:]
             found_pids.add(pid)
             if not pid in pids:
-                print "bad pid", pid, "at line", line_no
+                print("bad pid", pid, "at line", line_no)
                 error_count += 1
             if len(tracks) != NTRACKS:
-                print "wrong number of tracks, found", len(tracks), "should have", NTRACKS, "at", line_no
+                print("wrong number of tracks, found", len(tracks), "should have", NTRACKS, "at", line_no)
                 error_count += 1
             if len(set(tracks)) != NTRACKS:
-                print "wrong number of unique tracks, found", len(set(tracks)), "should have", NTRACKS, "at", line_no
+                print("wrong number of unique tracks, found", len(set(tracks)), "should have", NTRACKS, "at", line_no)
                 error_count += 1
 
             if seed_tracks[pid].intersection(set(tracks)):
-                print "found seed tracks in the submission for playlist", pid, "at", line_no
+                print("found seed tracks in the submission for playlist", pid, "at", line_no)
                 error_count += 1
 
             for uri in tracks:
                 if not is_track_uri(uri):
-                    print "bad track uri", uri, "at", line_no
+                    print("bad track uri", uri, "at", line_no)
                     error_count += 1
 
     if len(found_pids) != len(pids):
-        print "wrong number of playlists, found", len(found_pids), "expected", len(pids)
+        print("wrong number of playlists, found", len(found_pids), "expected", len(pids))
         error_count += 1
 
     return error_count
@@ -103,10 +104,10 @@ def is_track_uri(uri):
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print "usage: python verify_submission.py challenge_set.json submission.csv"
+        print("usage: python verify_submission.py challenge_set.json submission.csv")
         sys.exit()
     errors = verify_submission(sys.argv[1], sys.argv[2])
     if errors == 0:
-        print "Submission is OK! Remember to gzip your submission before submitting it to the Recsys challenge."
+        print("Submission is OK! Remember to gzip your submission before submitting it to the Recsys challenge.")
     else:
-        print "Your submission has", errors, "errors. If you submit it, it will be rejected."
+        print("Your submission has", errors, "errors. If you submit it, it will be rejected.")
