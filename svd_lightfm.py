@@ -1,3 +1,4 @@
+import pickle
 import numpy as np
 from lightfm import LightFM
 import pandas as pd
@@ -36,14 +37,29 @@ train_data = sparse.coo_matrix((np.ones(len(np_data), int), (np_data[:, 0], np_d
 
 lightfm_model = LightFM(loss='warp')
 
-lightfm_model.fit(train_data, epochs=30, num_threads=2)
+# LOAD MODEL
+# lightfm_model = pickle.load(open('models/lightfm_model.pickle', "rb"))
 
-rec = lightfm_recommendation(lightfm_model, train_data, playlist_df['track_id'], test_df.pid.values)
-# rec = lightfm_recommendation(lightfm_model, train_data, playlist_df['track_id'], [1, 5, 150])
+lightfm_model.fit(train_data, epochs=1, num_threads=2, verbose=2)
+# SAVE MODEL
+with open('models/lightfm_model.pickle', 'wb') as fle:
+    pickle.dump(lightfm_model, fle, protocol=pickle.HIGHEST_PROTOCOL)
 
-output = build_output(rec, 'pid', 'track_id')
 
-file_name = 'test2.csv'
-team_name = 'RecSysCG'
-contact_information = 'dimitreandrew@gmail.com'
-output_submission(output, file_name, team_name, contact_information)
+# USE WHOLE DATA SET TO PREDICTION
+# rec = lightfm_recommendation(lightfm_model, train_data, playlist_df['track_id'], test_df.pid.values)
+# output = build_output(rec, 'pid', 'track_id')
+# file_name = 'test2.csv'
+# team_name = 'RecSysCG'
+# contact_information = 'dimitreandrew@gmail.com'
+# output_submission(output, file_name, team_name, contact_information)
+
+
+# PARTITION DATA SET TO PREDICTION
+partitions = 10
+size = len(test_df.pid.values) // partitions
+index = 0     # range from 0 to (partitions - 1)
+rec_partition = lightfm_recommendation(lightfm_model, train_data, playlist_df['track_id'],
+                                       test_df.pid.values[size * index:size * (index + 1)])
+output = build_output(rec_partition, 'pid', 'track_id')
+output.to_csv('submissions/partition%s.csv' % index)

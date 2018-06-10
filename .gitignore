@@ -3,7 +3,10 @@ __pycache__/
 submissions
 data
 challenge
+models
 *.h5
 R/.Rhistory
 R/.RData
 .Rproj.user
+*.csv
+*.json

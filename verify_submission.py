@@ -1,8 +1,6 @@
 """
   Verifies that a given RecSys challenge submision is properly constructed.
-
   Usage:
-
         python verify_submission.py challenge_set.json submission.csv
 """
 import sys
@@ -10,6 +8,7 @@ import json
 
 NTRACKS = 500
 
+valid_tracks = set(['main', 'creative'])
 
 def verify_submission(challenge_path, submission_path):
     has_team_info = False
@@ -53,7 +52,13 @@ def verify_submission(challenge_path, submission_path):
             if line.startswith("team_info"):
                 has_team_info = True
                 tinfo = line.split(',')
-                if tinfo[1] != 'main' and tinfo[1] != 'creative':
+                if tinfo[1] in valid_tracks:
+                    track = tinfo[1]
+                    team_name = tinfo[2]
+                elif tinfo[2] in valid_tracks:
+                    track = tinfo[2]
+                    team_name = tinfo[1]
+                else:
                     print("unknown challenge track", tinfo[1], "should be 'main' or 'creative' at line", line_no)
                     error_count += 1
             else:
@@ -108,6 +113,6 @@ if __name__ == '__main__':
         sys.exit()
     errors = verify_submission(sys.argv[1], sys.argv[2])
     if errors == 0:
-        print("Submission is OK! Remember to gzip your submission before submitting it to the Recsys challenge.")
+        print("Submission is OK! It is ready to submit to the Recsys challenge.")
     else:
         print("Your submission has", errors, "errors. If you submit it, it will be rejected.")
