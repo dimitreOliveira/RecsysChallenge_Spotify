@@ -3,7 +3,7 @@ library(dplyr)
 # translating track id in int to track_uri
 
 
-track_play <- read.csv2("../data/sample_play_track_id.csv", header = T, sep = ";", stringsAsFactors = F)
+track_play <- read.csv2("../data/play_track_id.csv", header = T, sep = ";", stringsAsFactors = F)
 submissions <- read.csv2("../submissions/submission1.csv", header = T, sep = ",", stringsAsFactors = F)
 test <- submissions
 
@@ -19,7 +19,7 @@ for(i in colnames(submissions)){
     colnames(df) <- names
     
     df_join <- df %>%
-      left_join(info, by = c("track_id")) %>%
+      inner_join(info, by = c("track_id")) %>%
       distinct() %>%
       select(-pid)
     
@@ -35,3 +35,19 @@ for(i in colnames(submissions)){
 }
 
 write.table(new, file = "../submissions/submission.csv",row.names=FALSE, na="",col.names=TRUE, sep=",")
+
+count <- 0
+for(i in colnames(submissions)){
+  if(i != "pid"){
+    df <- submissions[,c(i)]
+    
+    n <- length(unique(df))
+    if(n < 10000){
+      count <- count + 1
+    }
+    
+  }
+}
+
+print(count)
+
