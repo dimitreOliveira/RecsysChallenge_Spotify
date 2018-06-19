@@ -1,6 +1,7 @@
 import pickle
 import numpy as np
 from lightfm import LightFM
+from lightfm.evaluation import precision_at_k
 import pandas as pd
 import scipy.sparse as sparse
 from dataset import build_output, output_submission
@@ -35,14 +36,13 @@ print(playlist_df.head(5))
 np_data = np.array(playlist_df)
 train_data = sparse.coo_matrix((np.ones(len(np_data), int), (np_data[:, 0], np_data[:, 1])))
 
-lightfm_model = LightFM(loss='warp')
-
 # LOAD MODEL
-# lightfm_model = pickle.load(open('models/lightfm_model.pickle', "rb"))
+# lightfm_model = pickle.load(open('models/model_20ep.pickle', "rb"))
 
-lightfm_model.fit(train_data, epochs=1, num_threads=2, verbose=2)
+lightfm_model = LightFM(loss='warp')
+lightfm_model.fit(train_data, epochs=20, num_threads=2, verbose=2)
 # SAVE MODEL
-with open('models/lightfm_model.pickle', 'wb') as fle:
+with open('models/model_20ep.pickle', 'wb') as fle:
     pickle.dump(lightfm_model, fle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
@@ -56,10 +56,11 @@ with open('models/lightfm_model.pickle', 'wb') as fle:
 
 
 # PARTITION DATA SET TO PREDICTION
-partitions = 10
+partitions = 5
 size = len(test_df.pid.values) // partitions
-index = 0     # range from 0 to (partitions - 1)
+index = 2     # range from 0 to (partitions - 1)
 rec_partition = lightfm_recommendation(lightfm_model, train_data, playlist_df['track_id'],
                                        test_df.pid.values[size * index:size * (index + 1)])
 output = build_output(rec_partition, 'pid', 'track_id')
-output.to_csv('submissions/partition%s.csv' % index)
+output.to_csv('submissions/partition__%s.csv' % index)
+# after creating all partitions run "join_partitions.py"
