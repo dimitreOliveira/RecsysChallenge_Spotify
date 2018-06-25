@@ -1,11 +1,11 @@
 import pickle
 import numpy as np
-from lightfm import LightFM
-from lightfm.evaluation import precision_at_k
 import pandas as pd
 import scipy.sparse as sparse
-from dataset import build_output, output_submission
+from lightfm import LightFM
+from lightfm.evaluation import precision_at_k
 from model import lightfm_recommendation
+from dataset import build_output, output_submission
 
 pd.set_option('display.width', 320)
 
@@ -14,8 +14,6 @@ test_data = 'data/pid_10k_sample.csv'
 
 test_df = pd.read_csv(test_data, dtype=np.int32)
 playlist_df = pd.read_csv(playlist_data, delimiter=';', dtype={'pid': int, 'track_id': int, 'rating': int})
-
-# playlist_df = playlist_df[:50000]
 
 users = playlist_df['pid'].unique()
 songs = playlist_df['track_id'].unique()
@@ -37,13 +35,13 @@ np_data = np.array(playlist_df)
 train_data = sparse.coo_matrix((np.ones(len(np_data), int), (np_data[:, 0], np_data[:, 1])))
 
 # LOAD MODEL
-# lightfm_model = pickle.load(open('models/model_20ep.pickle', "rb"))
+lightfm_model = pickle.load(open('models/model_20ep.pickle', "rb"))
 
-lightfm_model = LightFM(loss='warp')
-lightfm_model.fit(train_data, epochs=20, num_threads=2, verbose=2)
-# SAVE MODEL
-with open('models/model_20ep.pickle', 'wb') as fle:
-    pickle.dump(lightfm_model, fle, protocol=pickle.HIGHEST_PROTOCOL)
+# lightfm_model = LightFM(loss='warp')
+# lightfm_model.fit(train_data, epochs=20, num_threads=2, verbose=2)
+# # SAVE MODEL
+# with open('models/model_20ep.pickle', 'wb') as fle:
+#     pickle.dump(lightfm_model, fle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 # USE WHOLE DATA SET TO PREDICTION
@@ -56,11 +54,11 @@ with open('models/model_20ep.pickle', 'wb') as fle:
 
 
 # PARTITION DATA SET TO PREDICTION
-partitions = 5
+partitions = 7
 size = len(test_df.pid.values) // partitions
-index = 2     # range from 0 to (partitions - 1)
+index = 7     # range from 0 to "partitions"
 rec_partition = lightfm_recommendation(lightfm_model, train_data, playlist_df['track_id'],
                                        test_df.pid.values[size * index:size * (index + 1)])
 output = build_output(rec_partition, 'pid', 'track_id')
-output.to_csv('submissions/partition__%s.csv' % index)
+output.to_csv('submissions/partition%s.csv' % index)
 # after creating all partitions run "join_partitions.py"

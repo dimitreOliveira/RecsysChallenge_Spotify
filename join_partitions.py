@@ -2,9 +2,9 @@ import pandas as pd
 from dataset import output_submission
 
 
-partitions = 5
-base_path = 'submissions/partition_'
-file_name = 'test4.csv'
+partitions = 8
+base_path = 'submissions/partition'
+file_name = 'test2.csv'
 team_name = 'RecSysCG'
 contact_information = 'dimitreandrew@gmail.com'
 joined_df = pd.read_csv(base_path + '%s.csv' % 0)

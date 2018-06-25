@@ -148,7 +148,9 @@ def lightfm_recommendation(model, data, items, user_ids, verbose=0):
 
     for user_id in user_ids:
         scores = model.predict(user_id, np.arange(n_itens), num_threads=2)
+        known_positives = items[data.tocsr()[user_id].indices]
         top_items = items[np.argsort(-scores)]
+        top_items = top_items.where(~top_items.isin(known_positives)).dropna().astype(int)
         top_items_df = pd.DataFrame(top_items.unique()[:500], columns=['track_id'])
         top_items_df['pid'] = user_id
         recommendation.append(top_items_df)
@@ -156,7 +158,6 @@ def lightfm_recommendation(model, data, items, user_ids, verbose=0):
         if verbose > 0:
             print("User %s" % user_id)
             if verbose == 2:
-                known_positives = items[data.tocsr()[user_id].indices]
                 print("Known positives:")
                 for x in known_positives[:3]:
                     print("       %s" % x)
