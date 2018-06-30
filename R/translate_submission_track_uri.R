@@ -4,13 +4,14 @@ library(dplyr)
 
 
 track_play <- read.csv2("../data/play_track_id.csv", header = T, sep = ";", stringsAsFactors = F)
-submissions <- read.csv2("../submissions/submission1.csv", header = T, sep = ",", stringsAsFactors = F)
+submissions <- read.csv2("../submissions/test4.csv", header = T, sep = ",", stringsAsFactors = F)
 test <- submissions
 
 info <- track_play[, c(2, 4)]
 new <- submissions %>% select(pid)
 
 name <- "trackuri_"
+#info <- as.data.frame(lapply(info, as.numeric)) 
 for(i in colnames(submissions)){
   if(i != "pid"){
     df <- submissions[,c("pid", i)]
@@ -35,19 +36,4 @@ for(i in colnames(submissions)){
 }
 
 write.table(new, file = "../submissions/submission.csv",row.names=FALSE, na="",col.names=TRUE, sep=",")
-
-count <- 0
-for(i in colnames(submissions)){
-  if(i != "pid"){
-    df <- submissions[,c(i)]
-    
-    n <- length(unique(df))
-    if(n < 10000){
-      count <- count + 1
-    }
-    
-  }
-}
-
-print(count)
 
