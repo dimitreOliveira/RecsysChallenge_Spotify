@@ -31,10 +31,19 @@ def format_output(df, id_cloumn, song_column):
 def output_submission(df, file_name, team_name, contact_information, path='submissions/', challenge_track='main'):
     file = path + file_name
 
-    first_row = pd.DataFrame(columns=['pid', 'trackuri_1', 'trackuri_2', 'trackuri_3'])
-    first_row.loc[0] = ['team_info', challenge_track, team_name, contact_information]
+    first_row = pd.DataFrame(columns=build_columns())
+    first_row.loc[0] = build_first_row(team_name, contact_information, challenge_track)
 
     output = pd.concat([first_row, df])
     output = output[build_columns()]
     output = output.set_index('pid')
     output.to_csv(file)
+    print(output.shape)
+
+
+def build_first_row(team_name, contact_information, challenge_track='main'):
+    row = ['team_info', challenge_track, team_name, contact_information]
+    for i in range(4, 501):
+        row.append(None)
+
+    return row
