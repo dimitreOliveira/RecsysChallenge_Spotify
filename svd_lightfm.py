@@ -54,9 +54,9 @@ lightfm_model = pickle.load(open('models/model_20ep.pickle', "rb"))
 
 
 # PARTITION DATA SET TO PREDICTION
-partitions = 7
+partitions = 5
 size = len(test_df.pid.values) // partitions
-index = 7     # range from 0 to "partitions"
+index = 5    # range from 0 to "partitions"
 rec_partition = lightfm_recommendation(lightfm_model, train_data, playlist_df['track_id'],
                                        test_df.pid.values[size * index:size * (index + 1)])
 output = build_output(rec_partition, 'pid', 'track_id')

@@ -38,7 +38,6 @@ def output_submission(df, file_name, team_name, contact_information, path='submi
     output = output[build_columns()]
     output = output.set_index('pid')
     output.to_csv(file)
-    print(output.shape)
 
 
 def build_first_row(team_name, contact_information, challenge_track='main'):
