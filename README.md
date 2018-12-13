@@ -37,7 +37,7 @@ As part of this challenge, Spotify has released the Million Playlist Dataset. It
 ### R Dependencies:
 * [dplyr](https://dplyr.tidyverse.org/)
 
-### PythonDependencies:
+### Python Dependencies:
 * [numpy](http://www.numpy.org/)
 * [pandas](http://pandas.pydata.org/)
 * [scipy](https://www.scipy.org/)
