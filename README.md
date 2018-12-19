@@ -38,10 +38,10 @@ As part of this challenge, Spotify has released the Million Playlist Dataset. It
 * [dplyr](https://dplyr.tidyverse.org/)
 
 ### Python Dependencies:
-* [numpy](http://www.numpy.org/)
-* [pandas](http://pandas.pydata.org/)
-* [scipy](https://www.scipy.org/)
-* [lightfm](https://lyst.github.io/lightfm/docs/home.html)
+* [NumPy](http://www.numpy.org/)
+* [Pandas](http://pandas.pydata.org/)
+* [SciPy](https://www.scipy.org/)
+* [LightFM](https://lyst.github.io/lightfm/docs/home.html)
 
 ### To-Do:
 * There was still some work to do to adjust the submission files to match the required format ("check.py" code).
